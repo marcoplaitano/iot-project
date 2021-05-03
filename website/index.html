@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <link rel="shortcut icon" href="#" />
+    <link rel="stylesheet" href="./style.css">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>IoT Weather Station</title>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/paho-mqtt/1.0.1/mqttws31.js" type="text/javascript"></script>
+    <script src="./scripts/script.js" type="text/javascript"></script>
+    <script src="./scripts/tempScript.js" type="text/javascript"></script>
+</head>
+<body onload="initPage()">
+    <div class="topbar">
+        <a href="" class="curr-page">Temperature</a>
+        <a href="./humPage.html">Humidity</a>
+        <a href="./lightPage.html">Brightness</a>
+    </div>
+    <p class="sensor" id="temp-sensor">Temperature: <span id="temp-value">0.0 °C</span></p>
+    <div>
+        <canvas id="chart" width="1200" height="300"></canvas>
+    </div>
+    <p class="device" id="fan-device">Cooling Fan: <span id="fan-state">no data</span></p>
+    <div class="inputs-section">
+        <p class="inputLabel">Max Temp: </p>
+        <input class="input-box" id="input-max-temp" type="number" step="0.10" min="0" max="100" oninput="toggleButton(this)">
+        <button class="active-btn" id="max-temp" type="button" onclick="sendVariables(this)">Update value</button>
+        <p class="inputLabel">Min Temp: </p>
+        <input class="input-box" id="input-min-temp" type="number" step="0.10" min="0" max="100" oninput="toggleButton(this)">
+        <button class="active-btn" id="min-temp" type="button" onclick="sendVariables(this)">Update value</button>
+    </div>
+</body>
+<style>
+    .curr-page {
+        background-color: #ef6461;
+        color: #f2f2f2;
+    }
+
+    .active-btn:hover {
+        background-color: rgba(239, 100, 97, 0.9);
+    }
+</style>
+</html>

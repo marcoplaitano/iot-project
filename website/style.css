@@ -1,0 +1,109 @@
+html,
+body {
+    height: 100vh;
+    overflow-y: hidden;
+    background-color: #f2f2f2;
+    color: #333333;
+    font-family: sans-serif;
+    font-size: 2.2vh;
+    margin-left: 1.5vw;
+    margin-top: 3vh;
+}
+
+
+.topbar {
+    position: absolute;
+    overflow: hidden;
+    top: 0;
+    left: 0;
+    width: 100vw;
+    background-color: #333333;
+}
+
+
+a {
+    float: left;
+    color: #f2f2f2;
+    text-align: center;
+    text-decoration: none;
+    font-size: 2vh;
+    padding: 1.6vh;
+    transition: background-color 0.25s ease-in-out, color 0.25s ease-in-out;
+}
+
+
+a:hover {
+    background-color: #f2f2f2;
+    color: #333333;
+    cursor: pointer;
+}
+
+
+.sensor,
+.device {
+    font-size: 2.8vh;
+    font-weight: 600;
+    letter-spacing: 0.05vw;
+    text-align: justify;
+    text-justify: inter-word;
+}
+
+
+#temp-value,
+#hum-value,
+#light-value,
+#fan-state,
+#sunshield-state,
+#led-state {
+    font-size: 2.4vh;
+    font-weight: 400;
+}
+
+
+.inputs-section {
+    margin-top: 6vh;
+}
+
+
+input[type=number] {
+    font-size: 1.8vh;
+    margin-left: 3vw;
+    padding: 0.8vh 0.3vw;
+    background-color: rgba(0,0,0,0);
+    border-style: solid;
+    border-width: 2px;
+    border-radius: 8px;
+    border-color: #333333;
+}
+
+
+input:focus {
+    outline: none;
+}
+
+
+.active-btn,
+.inactive-btn {
+    font-size: 1.8vh;
+    text-align: center;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    margin-left: 3vw;
+    padding: 0.5vh 1.5vw;
+    border-style: solid;
+    border-radius: 8px;
+    border-width: 0;
+    background-color: rgba(200, 200, 200, 0.8);
+    transition: color 0.25s ease-in-out, background-color 0.25s ease-in-out;
+}
+
+
+.active-btn:hover {
+    cursor: pointer;
+    color: white;
+}
+
+
+.inactive-btn:hover {
+    cursor: not-allowed;
+}
