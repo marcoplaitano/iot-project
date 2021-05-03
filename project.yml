@@ -1,0 +1,16 @@
+---
+config: {}
+specs:
+    disk: null
+    port: /dev/ttyUSB0
+    probe: null
+target: esp32_devkitc
+vm:
+    dev_uid: qMN4GbxtQRGoQof19ZNLhg
+    device_uid: null
+    features: []
+    rtos: esp32-rtos
+    target: esp32_devkitc
+    uid: moL0L1oDSYSC6gmJjxe_DA
+    version: r20.09.17
+...
