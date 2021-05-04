@@ -26,10 +26,10 @@
     <div class="inputs-section">
         <p class="inputLabel">Cover Time: </p>
         <input class="input-box" id="input-cover-time" type="number" step="1" min="4" max="86400" oninput="toggleButton(this)">
-        <button class="active-btn" id="cover-time" type="button" onclick="sendVariables(this)">Update value</button>
+        <button class="btn" id="btn-cover-time" type="button" onclick="sendVariables(this)">Update value</button>
         <p class="inputLabel">Uncover Time: </p>
         <input class="input-box" id="input-uncover-time" type="number" step="1" min="4" max="86400" oninput="toggleButton(this)">
-        <button class="active-btn" id="uncover-time" type="button" onclick="sendVariables(this)">Update value</button>
+        <button class="btn" id="btn-uncover-time" type="button" onclick="sendVariables(this)">Update value</button>
     </div>
 </body>
 <style>
@@ -38,7 +38,7 @@
         color: #f2f2f2;
     }
 
-    .active-btn:hover {
+    .btn:enabled:hover {
         background-color: rgba(27, 153, 139, 0.7);
     }
 </style>

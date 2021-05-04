@@ -25,10 +25,10 @@
     <div class="inputs-section">
         <p class="inputLabel">Max Temp: </p>
         <input class="input-box" id="input-max-temp" type="number" step="0.10" min="0" max="100" oninput="toggleButton(this)">
-        <button class="active-btn" id="max-temp" type="button" onclick="sendVariables(this)">Update value</button>
+        <button class="btn" id="btn-max-temp" type="button" onclick="sendVariables(this)">Update value</button>
         <p class="inputLabel">Min Temp: </p>
         <input class="input-box" id="input-min-temp" type="number" step="0.10" min="0" max="100" oninput="toggleButton(this)">
-        <button class="active-btn" id="min-temp" type="button" onclick="sendVariables(this)">Update value</button>
+        <button class="btn" id="btn-min-temp" type="button" onclick="sendVariables(this)">Update value</button>
     </div>
 </body>
 <style>
@@ -37,7 +37,7 @@
         color: #f2f2f2;
     }
 
-    .active-btn:hover {
+    .btn:enabled:hover {
         background-color: rgba(239, 100, 97, 0.9);
     }
 </style>

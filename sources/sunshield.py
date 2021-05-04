@@ -25,7 +25,7 @@ class SUNSHIELD():
         if self.is_covering():
             return False
         self._motor.moveToDegree(COVER_DEGREE)
-        self._client.publish("sunshield", "covering")
+        self._client.publish("iot-marco/data/sunshield", "covering")
         return True
 
 
@@ -33,7 +33,7 @@ class SUNSHIELD():
         if not self.is_covering():
             return False
         self._motor.moveToDegree(UNCOVER_DEGREE)
-        self._client.publish("sunshield", "not covering")
+        self._client.publish("iot-marco/data/sunshield", "not covering")
         return True
 
 
@@ -44,10 +44,10 @@ class SUNSHIELD():
             self.cover()
 
 
+    def state(self):
+        return "covering" if self.is_covering() else "not covering"
+
+
     def control(self, command):
         if command == "get-state":
-            state = "covering" if self.is_covering() else "not covering"
-            self._client.publish("sunshield", state)
-            return True
-        else:
-            return False
+            self._client.publish("iot-marco/data/sunshield", self.state())

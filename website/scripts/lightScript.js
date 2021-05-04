@@ -6,30 +6,20 @@ function initPage() {
 }
 
 
-function updateVariables(data) {
-    // the client receives the 4 variables in one message, separated by blank spaces.
-    // the order is: MAX_TEMP, MIN_TEMP, COVER_TIME, UNCOVER_TIME
-    // the message is retained so that every time this client connects to the broker,
-    // it receives these values
-    values = data.split(" ", 4);
+function setInputBoxes() {
+    var inputCoverTime = document.getElementById("input-cover-time");
+    var inputUncoverTime = document.getElementById("input-uncover-time");
 
-    // updates the values
-    for (var i = 0; i < values.length; i++)
-        VARIABLES[i] = values[i];
-
-    // the input boxes let the user change the value of these variables
-    inputBoxes = document.getElementsByClassName("input-box");
     // sets the placeholders to the current values
-    inputBoxes[0].placeholder = parseFloat(VARIABLES[COVER_TIME]);
-    inputBoxes[1].placeholder = parseFloat(VARIABLES[UNCOVER_TIME]);
+    inputCoverTime.placeholder   = VARIABLES[COVER_TIME].toString();
+    inputUncoverTime.placeholder = VARIABLES[UNCOVER_TIME].toString();
 }
 
 
 function updateSensorsData(data) {
-    // the client receives the 3 sensors' values in one message, separated by blank spaces.
-    // the order is: temperature, humidity, brightness
-    var value = data.split(" ", 3)[2];
-    var brightness = parseInt(value);
+    // the client receives the 3 sensors' values in one JSON object
+    var obj = JSON.parse(data);
+    var brightness = parseInt(obj["brightness"]);
     document.getElementById("light-value").innerHTML = brightness;
     updateChart(brightness);
 }

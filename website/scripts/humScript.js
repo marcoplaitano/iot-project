@@ -5,15 +5,15 @@ function initPage() {
 }
 
 
-function updateVariables(data) {}
+function setInputBoxes() {
+    return;
+}
 
 
 function updateSensorsData(data) {
-    // the client receives the 3 sensors' values in one message, separated by blank spaces.
-    // the order is: temperature, humidity, brightness
-    var value = data.split(" ", 3)[1];
-    var humidity = parseFloat(value).toPrecision(4);
-
+    // the client receives the 3 sensors' values in one JSON object
+    var obj = JSON.parse(data);
+    var humidity = parseFloat(obj["humidity"]).toPrecision(4);
     document.getElementById("hum-value").innerHTML = humidity + " %";
     updateChart(humidity);
 }

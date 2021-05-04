@@ -10,14 +10,14 @@ class LED():
         if self._is_on:
             self._is_on = False
             digitalWrite(self._pin, LOW)
-            self._client.publish("led", "off")
+            self._client.publish("iot-marco/data/led", "off")
 
 
     def on(self):
         if not self._is_on:
             self._is_on = True
             digitalWrite(self._pin, HIGH)
-            self._client.publish("led", "on")
+            self._client.publish("iot-marco/data/led", "on")
 
 
     def toggle(self):
@@ -27,10 +27,10 @@ class LED():
             self.on()
 
 
+    def state(self):
+        return "on" if self._is_on else "off"
+
+
     def control(self, command):
         if command == "get-state":
-            state = "on" if self._is_on else "off"
-            self._client.publish("led", state)
-            return True
-        else:
-            return False
+            self._client.publish("iot-marco/data/led", self.state())

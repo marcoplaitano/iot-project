@@ -15,9 +15,6 @@ BITRES_HTU_RH_11_TEMP11 = 0x83
 
 BITRES_HTU_LIST = [BITRES_HTU_RH_12_TEMP14, BITRES_HTU_RH_8_TEMP12, BITRES_HTU_RH_10_TEMP13, BITRES_HTU_RH_11_TEMP11]
 
-TEMP_DELAY =  [50, 13, 25, 7]
-HUM_DELAY  =  [16,  3,  5, 8]
-
 
 class HTU21D(i2c.I2C):
     def __init__(self, i2cdrv, addr=HTU_I2C_ADDRESS, clk=400000):
@@ -28,8 +25,8 @@ class HTU21D(i2c.I2C):
     def init(self, res=0):
         self.write_bytes(HTU21D_SOFT_RESET)
         self.write_bytes(HTU21D_WRITE_USER_REG, BITRES_HTU_LIST[0])
-        self._delay_t = TEMP_DELAY[0]
-        self._delay_h = HUM_DELAY[0]
+        self._delay_t = 50
+        self._delay_h = 16
         self.write_read(HTU21D_READ_USER_REG,1)
 
 

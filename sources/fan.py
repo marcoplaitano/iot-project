@@ -14,7 +14,7 @@ class FAN():
             return False
         self._running = True
         digitalWrite(self._pin, HIGH)
-        self._client.publish("fan", "running")
+        self._client.publish("iot-marco/data/fan", "running")
         return True
 
 
@@ -23,14 +23,14 @@ class FAN():
             return False
         self._running = False
         digitalWrite(self._pin, LOW)
-        self._client.publish("fan", "not running")
+        self._client.publish("iot-marco/data/fan", "not running")
         return True
+
+
+    def state(self):
+        return "running" if self._running else "not running"
 
 
     def control(self, command):
         if command == "get-state":
-            state = "running" if self._running else "not running"
-            self._client.publish("fan", state)
-            return True
-        else:
-            return False
+            self._client.publish("iot-marco/data/fan", self.state())

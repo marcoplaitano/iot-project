@@ -12,8 +12,9 @@ streams.serial()
 #########################################
 
 import adc
+import json
+from mqtt import mqtt
 import sources.wifi_connection as wifi
-import sources.mqtt as mqtt
 import sources.htu21d as htu21d
 import sources.led as leds
 import sources.fan as fans
@@ -26,14 +27,11 @@ import sources.sunshield as sunshields
 #########################################
 
 PHOTORESISTOR_PIN = A1
-STATUS_LED_PIN = D19
-CONTROL_LED_PIN = D18
 
-# threshold value: if the current temperature exceeds this value
-# the cooling fan will be turned on
+# if the temperature exceeds this value the cooling fan will be turned on
 MAX_TEMP = 37.00
 # when the fan is on and temperature reaches this value, the fan turns off
-MIN_TEMP = 35.00
+MIN_TEMP = 32.00
 # === the following variables are measured in seconds ===
 # time the device can remain uncovered with a high value of brightness
 UNCOVER_TIME = 10
@@ -42,7 +40,7 @@ COVER_TIME = 8
 # time between each iteration of the main loop
 SLEEP_TIME = 2
 
-client = mqtt.MQTTClient("mydevice")
+client = mqtt.Client("mydevice", True)
 
 # temperature and humidity sensor
 htu = htu21d.HTU21D(I2C0)
@@ -54,51 +52,90 @@ fan = fans.FAN(D23, client)
 sunshield = sunshields.SUNSHIELD(D17.PWM, client)
 
 # led to activate if the room is too dark
-led = leds.LED(CONTROL_LED_PIN, client)
+led = leds.LED(D18, client)
 
 
 
 #########################################
-#               functions               #
+#     mqtt communication functions      #
 #########################################
 
-# function called in a thread to have a led blink continuosly
-# to indicate that the program is running
-def statusLed():
-    pinMode(STATUS_LED_PIN, OUTPUT)
-    while True:
-        pinToggle(STATUS_LED_PIN)
-        sleep(int(SLEEP_TIME/2) * 1000)
+def confirm_subscribe(data):
+    print("succesfully subscribed")
 
 
-# creates a string containing all the control variables and shares them via mqtt
+# creates a message containing all the control variables and shares them via mqtt
 def send_variables():
-    message = ' '.join([str(MAX_TEMP), str(MIN_TEMP), str(COVER_TIME), str(UNCOVER_TIME)])
-    # retain is set to True so that whenever the user logs on the web app,
-    # it always shows the updated values of these variables
-    client.publish("variables", message, True)
+    data = {
+        "max temp": MAX_TEMP,
+        "min temp": MIN_TEMP,
+        "cover time": COVER_TIME,
+        "uncover time": UNCOVER_TIME
+    }
+    # the message is a JSON representation of the dictionary
+    message = json.dumps(data)
+    client.publish("iot-marco/data/variables", str(message))
+
+
+# sends a message containing the 3 parameters read by the sensors via mqtt
+def send_sensor_values(values):
+    data = {
+        "temperature": values[0],
+        "humidity": values[1],
+        "brightness": values[2]
+    }
+    message = json.dumps(data)
+    client.publish("iot-marco/data/sensors", str(message))
+
+
+# sends a message containing the state of the devices via mqtt
+def send_devices_data():
+    data = {
+        "fan": fan.state(),
+        "sunshield": sunshield.state(),
+        "led": led.state()
+    }
+    message = json.dumps(data)
+    client.publish("iot-marco/data/devices", str(message))
 
 
 # takes the new values from the received data and updates the global variables
 def set_variables(data):
     global MAX_TEMP, MIN_TEMP, COVER_TIME, UNCOVER_TIME
-    values = data.split(' ')
-    MAX_TEMP = float(values[0])
-    MIN_TEMP = float(values[1])
-    COVER_TIME = int(values[2])
-    UNCOVER_TIME = int(values[3])
+    # the message received is a JSON object
+    values = json.loads(data)
+    MAX_TEMP = float(values["max temp"])
+    MIN_TEMP = float(values["min temp"])
+    COVER_TIME = int(values["cover time"])
+    UNCOVER_TIME = int(values["uncover time"])
     # sends the values back to the user
     send_variables()
 
 
-# sends a string containing the 3 parameters read by the sensors via mqtt
-# the order is: temperature, humidity, brightness
-def send_sensor_values(values):
-    message = ""
-    for val in values:
-        message += str(val) + ' '
-    client.publish("sensors", message)
+# called when any message is received
+def read_data(client, data):
+    message = data['message']
+    topic = str(message.topic)
+    payload = str(message.payload)
 
+    if topic == "iot-marco/commands/set-variables":
+        set_variables(payload)
+    elif topic == "iot-marco/commands/get-variables":
+        send_variables()
+    elif topic == "iot-marco/commands/get-devices":
+        send_devices_data()
+    elif topic == "iot-marco/commands/fan":
+        fan.control(payload)
+    elif topic == "iot-marco/commands/sunshield":
+        sunshield.control(payload)
+    elif topic == "iot-marco/commands/led":
+        led.control(payload)
+
+
+
+#########################################
+#           control functions           #
+#########################################
 
 def monitor_temperature(value):
     if value > MAX_TEMP:
@@ -126,7 +163,7 @@ def monitor_brightness(value):
         led.off()
     # if the room is too bright it starts counting the passing of time.
     # When time_passed reaches the UNCOVER_TIME threshold the sunshield
-    # will cover the device for a time equal to COVER_TIME
+    # will cover the device for a period of time equal to COVER_TIME
     if is_bright(value) and not sunshield.is_covering():
         time_passed += SLEEP_TIME
         if time_passed > UNCOVER_TIME:
@@ -139,22 +176,6 @@ def monitor_brightness(value):
             sunshield.uncover()
 
 
-# called when an mqtt message is received
-def read_data(client, data):
-    message = data['message']
-    payload = str(message.payload)
-    topic = str(message.topic)
-
-    if topic == "iot/commands/variables":
-        set_variables(payload)
-    elif topic == "iot/commands/fan":
-        fan.control(payload)
-    elif topic == "iot/commands/sunshield":
-        sunshield.control(payload)
-    elif topic == "iot/commands/led":
-        led.control(payload)
-
-
 
 #########################################
 #                 setup                 #
@@ -163,13 +184,12 @@ def read_data(client, data):
 # the pin connected to the photoresistor has to read analog data in input
 pinMode(PHOTORESISTOR_PIN, INPUT_ANALOG)
 
-# starts a new thread to have a led blink continuosly
-thread(statusLed)
-
 wifi.connect()
 
-client.connect(read_data)
-client.subscribe("iot/commands/#")
+client.on(mqtt.SUBACK, confirm_subscribe)
+client.connect("test.mosquitto.org", keepalive=0)
+client.loop(read_data)
+client.subscribe([["iot-marco/commands/#", 0]])
 
 htu.start()
 htu.init()

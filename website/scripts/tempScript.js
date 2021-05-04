@@ -6,34 +6,25 @@ function initPage() {
 }
 
 
-function updateVariables(data) {
-    // the client receives the 4 variables in one message, separated by blank spaces.
-    // the order is: MAX_TEMP, MIN_TEMP, COVER_TIME, UNCOVER_TIME
-    // the message is retained so that every time this client connects to the broker,
-    // it receives these values
-    values = data.split(" ", 4);
+function setInputBoxes() {
+    var inputMaxTemp = document.getElementById("input-max-temp");
+    var inputMinTemp = document.getElementById("input-min-temp");
 
-    // updates the values
-    for (var i = 0; i < values.length; i++)
-        VARIABLES[i] = values[i];
-
-    // the input boxes let the user change the value of these variables
-    inputBoxes = document.getElementsByClassName("input-box");
     // the MAX_TEMP input must be at least MIN_TEMP + 0.10
-    inputBoxes[MAX_TEMP].min = parseFloat(VARIABLES[MIN_TEMP]) + 0.10;
+    inputMaxTemp.min = parseFloat(VARIABLES[MIN_TEMP] + 0.10).toPrecision(4).toString();
     // the MIN_TEMP input must be at most MAX_TEMP - 0.10
-    inputBoxes[MIN_TEMP].max = parseFloat(VARIABLES[MAX_TEMP]) - 0.10;
+    inputMinTemp.max = parseFloat(VARIABLES[MAX_TEMP] - 0.10).toPrecision(4).toString();
+
     // sets the placeholders to the current values
-    inputBoxes[MAX_TEMP].placeholder = parseFloat(VARIABLES[MAX_TEMP]);
-    inputBoxes[MIN_TEMP].placeholder = parseFloat(VARIABLES[MIN_TEMP]);
+    inputMaxTemp.placeholder = VARIABLES[MAX_TEMP].toPrecision(4);
+    inputMinTemp.placeholder = VARIABLES[MIN_TEMP].toPrecision(4);
 }
 
 
 function updateSensorsData(data) {
-    // the client receives the 3 sensors' values in one message, separated by blank spaces.
-    // the order is: temperature, humidity, brightness
-    var value = data.split(" ", 3)[0];
-    var temperature = parseFloat(value).toPrecision(4);
+    // the client receives the 3 sensors' values in one JSON object
+    var obj = JSON.parse(data);
+    var temperature = parseFloat(obj["temperature"]).toPrecision(4);
     document.getElementById("temp-value").innerHTML = temperature + " °C";
     updateChart(temperature);
 }

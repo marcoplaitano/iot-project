@@ -20,9 +20,14 @@ const CHART_MAX_VALUES = 16;
 
 function clearInput() {
     // clears all the input boxes
-    inputBoxes = document.getElementsByClassName("input-box");
+    var inputBoxes = document.getElementsByClassName("input-box");
     for (var i = 0; i < inputBoxes.length; i++)
         inputBoxes[i].value = "";
+
+    // disables the buttons for the client can not send empty strings
+    var buttons = document.getElementsByClassName("btn");
+    for (var i = 0; i < buttons.length; i++)
+        buttons[i].disabled = true;
 }
 
 
@@ -64,42 +69,45 @@ function initChart(chartLabel, chartColor, min = 0, max = 100) {
 
 
 function onConnect() {
-    mqttClient.subscribe("iot/data/#");
-    // asks for the current state of the devices if no data has been received yet
-    devices = ["fan", "sunshield", "led"];
-    devices.forEach(device => {
-        deviceState = sessionStorage.getItem(device);
-        if (deviceState == null)
-            publish("iot/commands/" + device, "get-state");
-        else
-            updateDeviceState(device, deviceState);
-    });
+    console.log("CONNECTED");
+    mqttClient.subscribe("iot-marco/data/#");
+    // asks for the variables' current values
+    publish("iot-marco/commands/get-variables");
+    // asks for the current state of the devices
+    publish("iot-marco/commands/get-devices");
 }
 
 
-function onDisconnect(responseObject) {
-    if (responseObject.errorCode !== 0)
-        alert("lost connection to broker! Please reload page");
-}
-
-
-function onMessageReceived(message) {
-    if (message.destinationName == "iot/data/variables")
-        updateVariables(message.payloadString);
-    else if (message.destinationName == "iot/data/sensors")
-        updateSensorsData(message.payloadString);
-    else {
-        device = message.destinationName.substr(9);
-        updateDeviceState(device, message.payloadString);
+function onDisconnect(response) {
+    if (response.errorCode !== 0) {
+        console.log("DISCONNECTED WITH ERROR:", response.errorMessage);
+        alert("Lost connection to broker! Please reload page.");
     }
 }
 
 
-function publish(topic, data, retain = false, qos = 0) {
-    message = new Paho.MQTT.Message(data);
+function onMessageReceived(message) {
+    var topic = message.destinationName;
+    var payload = message.payloadString;
+
+    if (topic == "iot-marco/data/variables")
+        updateVariables(payload);
+    else if (topic == "iot-marco/data/sensors")
+        updateSensorsData(payload);
+    else if (topic == "iot-marco/data/devices")
+        setDevicesInitialState(payload);
+    else {
+        var device = topic.substr(15);
+        updateDeviceState(device, payload);
+    }
+}
+
+
+function publish(topic, data = "", retain = false) {
+    var message = new Paho.MQTT.Message(data.toString());
     message.destinationName = topic;
     message.retained = retain;
-    message.qos = qos;
+    message.qos = 0;
     mqttClient.send(message);
 }
 
@@ -123,59 +131,91 @@ function updateChart(newValue) {
 }
 
 
-function updateDeviceState(device, data) {
-    element = document.getElementById(device + "-state");
+function updateVariables(data) {
+    // the client receives the 4 variables in a JSON object.
+    var obj = JSON.parse(data);
+
+    // updates the values
+    VARIABLES[MAX_TEMP] = parseFloat(obj["max temp"]);
+    VARIABLES[MIN_TEMP] = parseFloat(obj["min temp"]);
+    VARIABLES[COVER_TIME] = parseInt(obj["cover time"]);
+    VARIABLES[UNCOVER_TIME] = parseInt(obj["uncover time"]);
+
+    // to update placeholders and min/max values
+    setInputBoxes();
+}
+
+
+// called when the webpage asks for the initial state of the devices
+// and the control board responds with a message
+function setDevicesInitialState(data) {
+    // the message received is in the form of a JSON object
+    var obj = JSON.parse(data);
+
+    updateDeviceState("fan", obj['fan']);
+    updateDeviceState("sunshield", obj['sunshield']);
+    updateDeviceState("led", obj['led']);
+}
+
+
+// sets the new state for the given device in the HTML document
+function updateDeviceState(device, newState) {
+    var element = document.getElementById(device + "-state");
     if (element != null)
-        element.innerHTML = data;
-    sessionStorage.setItem(device, data);
+        element.innerHTML = newState;
 }
 
 
-// called whenever the user modifies the value of the input box.
-// this function checks wether the "update value" button should be
-// disabled based on the input value
+// called whenever the user modifies the value of an input box. This function checks
+// wether the "update value" button should be disabled based on the input
 function toggleButton(inputBox) {
-    string = inputBox.value;
-    value = parseFloat(string);
-    buttonId = inputBox.id.substr(6);
-    button = document.getElementById(buttonId);
+    var string = inputBox.value;
+    var value = parseFloat(string);
+    var buttonId = "btn-" + inputBox.id.substr(6);
+    var button = document.getElementById(buttonId);
 
-    if (string.length == 0 || value == null) {
-        button.className = "inactive-btn";
+    if (string.length == 0 || value == null)
         button.disabled = true;
-    }
-    else if (value < parseFloat(inputBox.min) || value > parseFloat(inputBox.max)) {
-        button.className = "inactive-btn";
+    else if (value < parseFloat(inputBox.min) || value > parseFloat(inputBox.max))
         button.disabled = true;
-    }
-    else {
-        button.className = "active-btn";
+    else
         button.disabled = false;
-    }
 }
 
 
-// when one of the variables is updated, the client sends a mqtt message with
-// retain set to true so that the device will always receive the updated values
-// when it connects to the broker.
+// called when the user modifies the value of a variable in one of the input boxes.
+// The page sends an update command to the esp32
 function sendVariables(button) {
-    newValue = parseFloat(document.getElementById("input-" + button.id).value);
-    if (newValue == null)
+    // if the button has id "btn-max-temp" then the input box's id is "input-max-temp"
+    var inputBoxId = "input-" + button.id.substr(4);
+
+    var newValue = parseFloat(document.getElementById(inputBoxId).value).toPrecision(4);
+    if (isNaN(newValue) || newValue == null)
         return;
 
-    if (button.id == "max-temp")
+    clearInput();
+
+    if (button.id == "btn-max-temp")
         VARIABLES[MAX_TEMP] = newValue;
-    else if (button.id == "min-temp")
+    else if (button.id == "btn-min-temp")
         VARIABLES[MIN_TEMP] = newValue;
-    else if (button.id == "cover-time")
-        VARIABLES[COVER_TIME] = newValue;
-    else if (button.id == "uncover-time")
-        VARIABLES[UNCOVER_TIME] = newValue;
+    else if (button.id == "btn-cover-time")
+        VARIABLES[COVER_TIME] = parseInt(newValue);
+    else if (button.id == "btn-uncover-time")
+        VARIABLES[UNCOVER_TIME] = parseInt(newValue);
 
-    // creates a message containing all 4 variables separated by a space
-    var message = "";
-    for (var i = 0; i < VARIABLES.length; i++)
-        message += VARIABLES[i] + " ";
+    // creates a message containing all 4 variables in the form of a JSON object
+    var obj = {
+        "max temp": VARIABLES[MAX_TEMP],
+        "min temp": VARIABLES[MIN_TEMP],
+        "cover time": VARIABLES[COVER_TIME],
+        "uncover time": VARIABLES[UNCOVER_TIME]
+    }
+    var message = JSON.stringify(obj);
 
-    publish("iot/commands/variables", message, true, 0);
+    // the message is retained so that the esp32 will always start with
+    // the updated values when it boots up and connects to the broker. Moreover,
+    // the esp32 always responds to a "set-variables" command with an "ACK" message.
+    // This means that the webpage too will always receive the newest values when started.
+    publish("iot-marco/commands/set-variables", message, true);
 }

@@ -26,7 +26,7 @@ def connect():
             print("couldn't connect")
             return False
     except Exception as e:
-        print("[warning] couldn't connect to WIFI")
+        print("[warning] couldn't connect to WIFI. Error:", e)
         return False
 
 

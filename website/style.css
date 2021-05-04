@@ -68,7 +68,7 @@ a:hover {
 input[type=number] {
     font-size: 1.8vh;
     margin-left: 3vw;
-    padding: 0.8vh 0.3vw;
+    padding: 0.8vh 0.5vw;
     background-color: rgba(0,0,0,0);
     border-style: solid;
     border-width: 2px;
@@ -82,8 +82,7 @@ input:focus {
 }
 
 
-.active-btn,
-.inactive-btn {
+.btn {
     font-size: 1.8vh;
     text-align: center;
     overflow: hidden;
@@ -98,12 +97,12 @@ input:focus {
 }
 
 
-.active-btn:hover {
+.btn:enabled:hover {
     cursor: pointer;
     color: white;
 }
 
 
-.inactive-btn:hover {
+.btn:disabled:hover {
     cursor: not-allowed;
 }
