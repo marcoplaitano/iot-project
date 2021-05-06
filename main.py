@@ -14,8 +14,8 @@ streams.serial()
 import adc
 import json
 from mqtt import mqtt
+from meas.htu21d import htu21d
 import sources.wifi_connection as wifi
-import sources.htu21d as htu21d
 import sources.led as leds
 import sources.fan as fans
 import sources.sunshield as sunshields
@@ -78,11 +78,11 @@ def send_variables():
 
 
 # sends a message containing the 3 parameters read by the sensors via mqtt
-def send_sensor_values(values):
+def send_sensor_values(t, h, b):
     data = {
-        "temperature": values[0],
-        "humidity": values[1],
-        "brightness": values[2]
+        "temperature": t,
+        "humidity": h,
+        "brightness": b
     }
     message = json.dumps(data)
     client.publish("iot-marco/data/sensors", str(message))
@@ -174,6 +174,8 @@ def monitor_brightness(value):
         if time_passed > COVER_TIME:
             time_passed = 0
             sunshield.uncover()
+    else:
+        time_passed = 0
 
 
 
@@ -181,7 +183,6 @@ def monitor_brightness(value):
 #                 setup                 #
 #########################################
 
-# the pin connected to the photoresistor has to read analog data in input
 pinMode(PHOTORESISTOR_PIN, INPUT_ANALOG)
 
 wifi.connect()
@@ -213,6 +214,6 @@ while True:
     monitor_brightness(brightness)
 
     # sends them
-    send_sensor_values([temperature, humidity, brightness])
+    send_sensor_values(temperature, humidity, brightness)
 
     sleep(SLEEP_TIME * 1000)

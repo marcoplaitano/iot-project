@@ -11,8 +11,8 @@ function setInputBoxes() {
     var inputUncoverTime = document.getElementById("input-uncover-time");
 
     // sets the placeholders to the current values
-    inputCoverTime.placeholder   = VARIABLES[COVER_TIME].toString();
-    inputUncoverTime.placeholder = VARIABLES[UNCOVER_TIME].toString();
+    inputCoverTime.placeholder   = COVER_TIME.toString();
+    inputUncoverTime.placeholder = UNCOVER_TIME.toString();
 }
 
 

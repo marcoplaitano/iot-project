@@ -1,9 +1,7 @@
-var VARIABLES = [0.0, 0.0, 0, 0];
-// position in the array
-const MAX_TEMP = 0;
-const MIN_TEMP = 1;
-const COVER_TIME = 2;
-const UNCOVER_TIME = 3;
+var MAX_TEMP = 0;
+var MIN_TEMP = 0;
+var COVER_TIME = 0;
+var UNCOVER_TIME = 0;
 
 var FAN_STATE = "not working";
 var SUNSHIELD_STATE = "not covering";
@@ -136,10 +134,10 @@ function updateVariables(data) {
     var obj = JSON.parse(data);
 
     // updates the values
-    VARIABLES[MAX_TEMP] = parseFloat(obj["max temp"]);
-    VARIABLES[MIN_TEMP] = parseFloat(obj["min temp"]);
-    VARIABLES[COVER_TIME] = parseInt(obj["cover time"]);
-    VARIABLES[UNCOVER_TIME] = parseInt(obj["uncover time"]);
+    MAX_TEMP = parseFloat(obj["max temp"]);
+    MIN_TEMP = parseFloat(obj["min temp"]);
+    COVER_TIME = parseInt(obj["cover time"]);
+    UNCOVER_TIME = parseInt(obj["uncover time"]);
 
     // to update placeholders and min/max values
     setInputBoxes();
@@ -196,20 +194,20 @@ function sendVariables(button) {
     clearInput();
 
     if (button.id == "btn-max-temp")
-        VARIABLES[MAX_TEMP] = newValue;
+        MAX_TEMP = newValue;
     else if (button.id == "btn-min-temp")
-        VARIABLES[MIN_TEMP] = newValue;
+        MIN_TEMP = newValue;
     else if (button.id == "btn-cover-time")
-        VARIABLES[COVER_TIME] = parseInt(newValue);
+        COVER_TIME = parseInt(newValue);
     else if (button.id == "btn-uncover-time")
-        VARIABLES[UNCOVER_TIME] = parseInt(newValue);
+        UNCOVER_TIME = parseInt(newValue);
 
     // creates a message containing all 4 variables in the form of a JSON object
     var obj = {
-        "max temp": VARIABLES[MAX_TEMP],
-        "min temp": VARIABLES[MIN_TEMP],
-        "cover time": VARIABLES[COVER_TIME],
-        "uncover time": VARIABLES[UNCOVER_TIME]
+        "max temp": MAX_TEMP,
+        "min temp": MIN_TEMP,
+        "cover time": COVER_TIME,
+        "uncover time": UNCOVER_TIME
     }
     var message = JSON.stringify(obj);
 

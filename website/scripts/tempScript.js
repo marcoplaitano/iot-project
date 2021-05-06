@@ -11,13 +11,13 @@ function setInputBoxes() {
     var inputMinTemp = document.getElementById("input-min-temp");
 
     // the MAX_TEMP input must be at least MIN_TEMP + 0.10
-    inputMaxTemp.min = parseFloat(VARIABLES[MIN_TEMP] + 0.10).toPrecision(4).toString();
+    inputMaxTemp.min = parseFloat(MIN_TEMP + 0.10).toPrecision(4).toString();
     // the MIN_TEMP input must be at most MAX_TEMP - 0.10
-    inputMinTemp.max = parseFloat(VARIABLES[MAX_TEMP] - 0.10).toPrecision(4).toString();
+    inputMinTemp.max = parseFloat(MAX_TEMP - 0.10).toPrecision(4).toString();
 
     // sets the placeholders to the current values
-    inputMaxTemp.placeholder = VARIABLES[MAX_TEMP].toPrecision(4);
-    inputMinTemp.placeholder = VARIABLES[MIN_TEMP].toPrecision(4);
+    inputMaxTemp.placeholder = MAX_TEMP.toPrecision(4);
+    inputMinTemp.placeholder = MIN_TEMP.toPrecision(4);
 }
 
 
