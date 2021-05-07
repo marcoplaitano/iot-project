@@ -12,33 +12,47 @@
 </head>
 <body onload="initPage()">
     <div>
-        <canvas id="chart" width="1500" height="300"></canvas>
+        <canvas id="chart" width="1300" height="300"></canvas>
     </div>
     <div class="split data">
         <div class="sensors">
-            <p class="sensor" id="temp-sensor"><span id="temp-icon">&#x1F321; </span>Temperature:<span id="temp-value"> 0.0 °C</span></p>
-            <p class="sensor" id="hum-sensor"><span id="hum-icon">&#x1F32B; </span>Humidity:<span id="hum-value"> 0.0 %</span></p>
-            <p class="sensor" id="light-sensor"><span id="light-icon">&#x2600; </span>Brightness:<span id="light-value"> 0</span></p>
+            <p class="sensor" id="temp-sensor"><span class="temp-icon">&#x1F321; </span>Temperature:<span id="temp-value"> 0.0 °C</span></p>
+            <p class="sensor" id="hum-sensor"><span class="hum-icon">&#x1F32B; </span>Humidity:<span id="hum-value"> 0.0 %</span></p>
+            <p class="sensor" id="light-sensor"><span class="light-icon">&#x2600; </span>Brightness:<span id="light-value"> 0</span></p>
         </div>
         <div class="devices">
-            <p class="device" id="fan-device"><span id="temp-icon">&#x1F321; </span>Cooling Fan:<span id="fan-state"> no data</span></p>
-            <p class="device" id="sunshield-device"><span id="light-icon">&#x2600; </span>Sunshield:<span id="sunshield-state"> no data</span></p>
-            <p class="device" id="led-device"><span id="light-icon">&#x2600; </span>Led:<span id="led-state"> no data</span></p>
+            <p class="device" id="fan-device"><span class="temp-icon">&#x1F321; </span>Cooling Fan:<span id="fan-state"> no data</span></p>
+            <p class="device" id="sunshield-device"><span class="light-icon">&#x2600; </span>Sunshield:<span id="sunshield-state"> no data</span></p>
+            <p class="device" id="led-device"><span class="light-icon">&#x2600; </span>Led:<span id="led-state"> no data</span></p>
         </div>
     </div>
-    <div class="split inputs-section">
-        <p class="input-label"><span id="temp-icon">&#x1F321; </span>Max Temp: </p>
-        <input class="input-box" id="input-max-temp" type="number" step="0.10" min="0" max="100" oninput="toggleButton(this)">
-        <button class="btn" id="btn-max-temp" type="button" onclick="sendVariables(this)">Update value</button>
-        <p class="input-label"><span id="temp-icon">&#x1F321; </span>Min Temp: </p>
-        <input class="input-box" id="input-min-temp" type="number" step="0.10" min="0" max="100" oninput="toggleButton(this)">
-        <button class="btn" id="btn-min-temp" type="button" onclick="sendVariables(this)">Update value</button>
-        <p class="input-label"><span id="light-icon">&#x2600; </span>Cover Time: </p>
-        <input class="input-box" id="input-cover-time" type="number" step="1" min="4" max="86400" oninput="toggleButton(this)">
-        <button class="btn" id="btn-cover-time" type="button" onclick="sendVariables(this)">Update value</button>
-        <p class="input-label"><span id="light-icon">&#x2600; </span>Uncover Time: </p>
-        <input class="input-box" id="input-uncover-time" type="number" step="1" min="4" max="86400" oninput="toggleButton(this)">
-        <button class="btn" id="btn-uncover-time" type="button" onclick="sendVariables(this)">Update value</button>
+    <div class="split inputs">
+        <div class="input-row">
+            <label for="input-max-temp" class="input-label"><span class="temp-icon">&#x1F321; </span>Max Temp: </label>
+            <input class="input-box" id="input-max-temp" type="number" step="0.10" min="0" max="100" oninput="toggleButton(this)">
+            <button class="btn" id="btn-max-temp" type="button" onclick="sendVariables(this)">Update value</button>
+            <br><br>
+        </div>
+        <div class="input-row">
+            <label for="input-min-temp" class="input-label"><span class="temp-icon">&#x1F321; </span>Min Temp: </label>
+            <input class="input-box" id="input-min-temp" type="number" step="0.10" min="0" max="100" oninput="toggleButton(this)">
+            <button class="btn" id="btn-min-temp" type="button" onclick="sendVariables(this)">Update value</button>
+            <br><br>
+        </div>
+        <div class="input-row">
+            <label for="input-cover-time" class="input-label"><span class="light-icon">&#x2600; </span>Cover Time: </label>
+            <input class="input-box" id="input-cover-time" type="number" step="1" min="4" max="86400" oninput="toggleButton(this)">
+            <button class="btn" id="btn-cover-time" type="button" onclick="sendVariables(this)">Update value</button>
+            <br><br>
+        </div>
+        <div class="input-row">
+            <label for="input-uncover-time" class="input-label"><span class="light-icon">&#x2600; </span>Uncover Time: </label>
+            <input class="input-box" id="input-uncover-time" type="number" step="1" min="4" max="86400" oninput="toggleButton(this)">
+            <button class="btn" id="btn-uncover-time" type="button" onclick="sendVariables(this)">Update value</button>
+      </div>
     </div>
+    <footer>
+        <p>Marco Plaitano</p>
+    </footer>
 </body>
 </html>
