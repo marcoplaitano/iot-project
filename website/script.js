@@ -16,13 +16,21 @@ const CHART_MAX_VALUES = 16;
 
 
 
+// called when the page (re)loads
+function initPage() {
+    clearInput();
+    initClient();
+    initChart();
+}
+
+
 function clearInput() {
     // clears all the input boxes
     var inputBoxes = document.getElementsByClassName("input-box");
     for (var i = 0; i < inputBoxes.length; i++)
         inputBoxes[i].value = "";
 
-    // disables the buttons for the client can not send empty strings
+    // disables the buttons for the client should not be able to send empty strings
     var buttons = document.getElementsByClassName("btn");
     for (var i = 0; i < buttons.length; i++)
         buttons[i].disabled = true;
@@ -41,24 +49,38 @@ function initClient() {
 }
 
 
-function initChart(chartLabel, chartColor, min = 0, max = 100) {
+function initChart() {
     chart = new Chart(document.getElementById("chart"), {
         type: 'line',
         data: {
             labels: [],
-            datasets: [{
-                label: chartLabel,
-                backgroundColor: chartColor,
-                borderColor: chartColor,
-                data: [],
-            }]
+            datasets: [
+                {
+                    label: "TEMPERATURE",
+                    backgroundColor: "#ef6461",
+                    borderColor: "#ef6461",
+                    data: [],
+                },
+                {
+                    label: "HUMIDITY",
+                    backgroundColor: "#7067cf",
+                    borderColor: "#7067cf",
+                    data: [],
+                },
+                {
+                    label: "BRIGHTNESS",
+                    backgroundColor: "#1b998b",
+                    borderColor: "#1b998b",
+                    data: [],
+                },
+            ]
         },
         options: {
             responsive: false,
             scales: {
                 y: {
-                    suggestedMin: min,
-                    suggestedMax: max
+                    suggestedMin: 0,
+                    suggestedMax: 100
                 }
             }
         }
@@ -110,25 +132,6 @@ function publish(topic, data = "", retain = false) {
 }
 
 
-function updateChart(newValue) {
-    // pushes the new value to the chart's data array
-    chart.data.labels.push("now");
-    chart.data.datasets[0].data.push(newValue);
-    // all the other values have to update their labels based on the amount of time
-    // that has passed since they have been added to the chart
-    for (var i = chart.data.labels.length - 1; i > 0; i--)
-        chart.data.labels[chart.data.labels.length - i - 1] = (i * 2).toString() + " sec";
-    chart.update();
-
-    // the oldest value is deleted from the chart
-    if (chart.data.datasets[0].data.length > CHART_MAX_VALUES) {
-        chart.data.datasets[0].data.shift();
-        chart.data.labels.shift();
-        chart.update();
-    }
-}
-
-
 function updateVariables(data) {
     // the client receives the 4 variables in a JSON object.
     var obj = JSON.parse(data);
@@ -141,6 +144,66 @@ function updateVariables(data) {
 
     // to update placeholders and min/max values
     setInputBoxes();
+}
+
+
+function setInputBoxes() {
+    var inputMaxTemp = document.getElementById("input-max-temp");
+    var inputMinTemp = document.getElementById("input-min-temp");
+    var inputCoverTime = document.getElementById("input-cover-time");
+    var inputUncoverTime = document.getElementById("input-uncover-time");
+
+    // the MAX_TEMP input must be at least MIN_TEMP + 0.10
+    inputMaxTemp.min = parseFloat(MIN_TEMP + 0.10).toPrecision(4).toString();
+    // the MIN_TEMP input must be at most MAX_TEMP - 0.10
+    inputMinTemp.max = parseFloat(MAX_TEMP - 0.10).toPrecision(4).toString();
+
+    // sets the placeholders to the current values
+    inputMaxTemp.placeholder = MAX_TEMP.toPrecision(4);
+    inputMinTemp.placeholder = MIN_TEMP.toPrecision(4);
+    inputCoverTime.placeholder = COVER_TIME.toString();
+    inputUncoverTime.placeholder = UNCOVER_TIME.toString();
+}
+
+
+function updateSensorsData(data) {
+    // the client receives the 3 sensors' values in one JSON object
+    var obj = JSON.parse(data);
+    var temperature = parseFloat(obj["temperature"]).toPrecision(4);
+    var humidity = parseFloat(obj["humidity"]).toPrecision(4);
+    var brightness = parseInt(obj["brightness"]);
+    // brightness is a value between 0 and 4095. It is normalized in the range 0, 100
+    brightness = parseInt(brightness / 4095 * 100);
+
+    document.getElementById("temp-value").innerHTML = " " + temperature + " °C";
+    document.getElementById("hum-value").innerHTML = " " + humidity + " %";
+    document.getElementById("light-value").innerHTML = " " + brightness;
+
+    updateChart([temperature, humidity, brightness]);
+}
+
+
+function updateChart(values) {
+    // pushes the new values to the chart's data arrays
+    chart.data.labels.push("now");
+    chart.data.datasets[0].data.push(values[0]); // temperature
+    chart.data.datasets[1].data.push(values[1]); // humidity
+    chart.data.datasets[2].data.push(values[2]); // brightness
+
+    // all the other values have to update their labels based on the amount of time
+    // that has passed since they have been added to the chart
+    for (var i = chart.data.labels.length - 1; i > 0; i--)
+        chart.data.labels[chart.data.labels.length - i - 1] = (i * 2).toString() + " sec";
+    chart.update();
+
+    // the oldest value is deleted if the number of values displayed is > max
+    if (chart.data.datasets[0].data.length > CHART_MAX_VALUES) {
+        chart.data.datasets[0].data.shift();
+        chart.data.datasets[1].data.shift();
+        chart.data.datasets[2].data.shift();
+        chart.data.labels.shift();
+        chart.update();
+    }
 }
 
 
@@ -160,7 +223,7 @@ function setDevicesInitialState(data) {
 function updateDeviceState(device, newState) {
     var element = document.getElementById(device + "-state");
     if (element != null)
-        element.innerHTML = newState;
+        element.innerHTML = " " + newState;
 }
 
 

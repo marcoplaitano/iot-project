@@ -11,41 +11,41 @@ body {
 }
 
 
-.topbar {
-    position: absolute;
-    overflow: hidden;
-    top: 0;
+.split {
+    position: fixed;
+    z-index: 1;
+    overflow-x: hidden;
+    margin-top: 1vh;
+}
+
+.data {
+    width: 50%;
     left: 0;
-    width: 100vw;
-    background-color: #333333;
+    margin-left: 4vw;
 }
 
-
-a {
-    float: left;
-    color: #f2f2f2;
-    text-align: center;
-    text-decoration: none;
-    font-size: 2vh;
-    padding: 1.6vh;
-    transition: background-color 0.25s ease-in-out, color 0.25s ease-in-out;
+.devices {
+    margin-top: 6vh;
 }
 
-
-a:hover {
-    background-color: #f2f2f2;
-    color: #333333;
-    cursor: pointer;
+.inputs-section {
+    width: 50%;
+    right: 0;
 }
 
 
 .sensor,
 .device {
+    padding-top: 1vh;
     font-size: 2.8vh;
     font-weight: 600;
     letter-spacing: 0.05vw;
-    text-align: justify;
-    text-justify: inter-word;
+}
+
+.input-label {
+    font-size: 2.5vh;
+    font-weight: 600;
+    letter-spacing: 0.05vw;
 }
 
 
@@ -59,9 +59,22 @@ a:hover {
     font-weight: 400;
 }
 
+#temp-icon,
+#hum-icon,
+#light-icon {
+    font-size: 3vh;
+}
 
-.inputs-section {
-    margin-top: 6vh;
+#temp-icon {
+    color: #ef6461;
+}
+
+#hum-icon {
+    color: #7067cf;
+}
+
+#light-icon {
+    color: #1b998b;
 }
 
 
@@ -75,7 +88,6 @@ input[type=number] {
     border-radius: 8px;
     border-color: #333333;
 }
-
 
 input:focus {
     outline: none;
@@ -96,13 +108,21 @@ input:focus {
     transition: color 0.25s ease-in-out, background-color 0.25s ease-in-out;
 }
 
-
 .btn:enabled:hover {
     cursor: pointer;
     color: white;
 }
 
-
 .btn:disabled:hover {
     cursor: not-allowed;
+}
+
+#btn-max-temp:enabled:hover,
+#btn-min-temp:enabled:hover {
+    background-color: rgba(239, 100, 97, 0.9);
+}
+
+#btn-cover-time:enabled:hover,
+#btn-uncover-time:enabled:hover {
+    background-color: rgba(27, 153, 139, 0.7);
 }
