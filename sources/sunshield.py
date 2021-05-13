@@ -5,7 +5,7 @@ COVER_DEGREE = 90
 UNCOVER_DEGREE = 0
 
 
-class SUNSHIELD():
+class Sunshield():
     def __init__(self, pin, client):
         self._motor = servo.Servo(pin)
         self._client = client

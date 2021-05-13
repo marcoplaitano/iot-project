@@ -175,9 +175,9 @@ function updateSensorsData(data) {
     // brightness is a value between 0 and 4095. It is normalized in the range 0, 100
     brightness = parseInt(brightness / 4095 * 100);
 
-    document.getElementById("temp-value").innerHTML = " " + temperature + " °C";
-    document.getElementById("hum-value").innerHTML = " " + humidity + " %";
-    document.getElementById("light-value").innerHTML = " " + brightness;
+    document.getElementById("temp-value").innerHTML = temperature + " °C";
+    document.getElementById("hum-value").innerHTML = humidity + " %";
+    document.getElementById("light-value").innerHTML = brightness;
 
     updateChart([temperature, humidity, brightness]);
 }
@@ -223,7 +223,7 @@ function setDevicesInitialState(data) {
 function updateDeviceState(device, newState) {
     var element = document.getElementById(device + "-state");
     if (element != null)
-        element.innerHTML = " " + newState;
+        element.innerHTML = newState;
 }
 
 

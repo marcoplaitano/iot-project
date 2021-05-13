@@ -1,4 +1,4 @@
-class FAN():
+class Fan():
     def __init__(self, pin, client):
         self._pin = pin
         self._client = client

@@ -1,4 +1,4 @@
-class LED():
+class Led():
     def __init__(self, pin, client):
         self._pin = pin
         self._client = client

@@ -1,7 +1,3 @@
-# file: main.py
-# author: marco
-# date: 23 April 2021
-
 # to redirect output to the console
 import streams
 streams.serial()
@@ -16,9 +12,9 @@ import json
 from mqtt import mqtt
 from meas.htu21d import htu21d
 import sources.wifi_connection as wifi
-import sources.led as leds
-import sources.fan as fans
-import sources.sunshield as sunshields
+import sources.led as myLed
+import sources.fan as myFan
+import sources.sunshield as mySunshield
 
 
 
@@ -32,12 +28,11 @@ PHOTORESISTOR_PIN = A1
 MAX_TEMP = 37.00
 # when the fan is on and temperature reaches this value, the fan turns off
 MIN_TEMP = 32.00
-# === the following variables are measured in seconds ===
-# time the device can remain uncovered with a high value of brightness
+# time (in seconds) the device can remain uncovered with a high value of brightness
 UNCOVER_TIME = 10
-# time the device has to remain covered
+# time (in seconds) the device has to remain covered
 COVER_TIME = 8
-# time between each iteration of the main loop
+# time (in seconds) between each iteration of the main loop
 SLEEP_TIME = 2
 
 client = mqtt.Client("mydevice", True)
@@ -46,13 +41,13 @@ client = mqtt.Client("mydevice", True)
 htu = htu21d.HTU21D(I2C0)
 
 # cooling fan controlled by a relay on pin D23
-fan = fans.FAN(D23, client)
+fan = myFan.Fan(D23, client)
 
 # cardboard panel attached to a servo motor controlled by pin D17
-sunshield = sunshields.SUNSHIELD(D17.PWM, client)
+sunshield = mySunshield.Sunshield(D17.PWM, client)
 
 # led to activate if the room is too dark
-led = leds.LED(D18, client)
+led = myLed.Led(D18, client)
 
 
 
@@ -166,12 +161,12 @@ def monitor_brightness(value):
     # will cover the device for a period of time equal to COVER_TIME
     if is_bright(value) and not sunshield.is_covering():
         time_passed += SLEEP_TIME
-        if time_passed > UNCOVER_TIME:
+        if time_passed >= UNCOVER_TIME:
             time_passed = 0
             sunshield.cover()
     elif sunshield.is_covering():
         time_passed += SLEEP_TIME
-        if time_passed > COVER_TIME:
+        if time_passed >= COVER_TIME:
             time_passed = 0
             sunshield.uncover()
     else:
@@ -185,17 +180,17 @@ def monitor_brightness(value):
 
 pinMode(PHOTORESISTOR_PIN, INPUT_ANALOG)
 
+htu.start()
+htu.init()
+
+sunshield.init()
+
 wifi.connect()
 
 client.on(mqtt.SUBACK, confirm_subscribe)
 client.connect("test.mosquitto.org", keepalive=0)
 client.loop(read_data)
 client.subscribe([["iot-marco/commands/#", 0]])
-
-htu.start()
-htu.init()
-
-sunshield.init()
 
 
 
