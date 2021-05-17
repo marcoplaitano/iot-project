@@ -9,22 +9,20 @@ class Fan():
         return self._running
 
 
-    def start(self, force=False):
+    def start(self):
         if self._running:
-            return False
-        self._running = True
+            return
         digitalWrite(self._pin, HIGH)
+        self._running = True
         self._client.publish("iot-marco/data/fan", "running")
-        return True
 
 
     def stop(self):
         if not self._running:
-            return False
-        self._running = False
+            return
         digitalWrite(self._pin, LOW)
+        self._running = False
         self._client.publish("iot-marco/data/fan", "not running")
-        return True
 
 
     def state(self):

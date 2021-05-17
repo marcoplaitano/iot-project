@@ -9,7 +9,6 @@ class Sunshield():
     def __init__(self, pin, client):
         self._motor = servo.Servo(pin)
         self._client = client
-        self._covering = False
 
 
     def init(self):
@@ -23,25 +22,16 @@ class Sunshield():
 
     def cover(self):
         if self.is_covering():
-            return False
+            return
         self._motor.moveToDegree(COVER_DEGREE)
         self._client.publish("iot-marco/data/sunshield", "covering")
-        return True
 
 
     def uncover(self):
         if not self.is_covering():
-            return False
+            return
         self._motor.moveToDegree(UNCOVER_DEGREE)
         self._client.publish("iot-marco/data/sunshield", "not covering")
-        return True
-
-
-    def toggle(self):
-        if self.is_covering():
-            self.uncover()
-        else:
-            self.cover()
 
 
     def state(self):
