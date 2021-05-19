@@ -29,3 +29,7 @@ class Led():
     def control(self, command):
         if command == "get-state":
             self._client.publish("iot-marco/data/led", self.state())
+        elif command == "turn-on":
+            self.on()
+        elif command == "turn-off":
+            self.off()

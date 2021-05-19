@@ -8,13 +8,12 @@ WIFI_PASSWORD = "WIFI_PASSWORD"
 
 def connect():
     if WIFI_PASSWORD == "WIFI_PASSWORD":
-        print("change wifi name and password values in sources/wifi_connection.py")
+        print("CHANGE WIFI NAME AND PASSWORD VALUES IN SOURCES/WIFI_CONNECTION.PY")
         return False
 
     wifi_driver.auto_init()
 
-    # Tries to establish a connection.
-    # An exception is launched after the 3rd failed attempt.
+    # tries to establish a connection
     try:
         num_tries = 3
         for i in range(num_tries):
@@ -26,23 +25,23 @@ def connect():
             print("couldn't connect")
             return False
     except Exception as e:
-        print("[warning] couldn't connect to WIFI. Error:", e)
+        print("Couldn't connect to WIFI. Error:", e)
         return False
 
 
-# Returns the IP address associated to the device.
+# returns the IP address associated to the device.
 def get_ip_address():
     try:
         return wifi.link_info()[0]
     except Exception as e:
-        print("[warning] couldn't get IP address. Returning empty string.")
+        print("Couldn't get IP address. Returning empty string.")
         return ""
 
 
-# Returns wether the device is connected to wifi or not.
+# returns wether the device is connected to wifi or not.
 def is_connected():
     try:
         return wifi.is_linked()
     except Exception as e:
-        print("[warning] couldn't check for existing WIFI connection. Returning false.")
+        print("Couldn't check for existing WIFI connection. Returning false.")
         return False

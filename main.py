@@ -35,7 +35,9 @@ COVER_TIME = 8
 # time (in seconds) between each iteration of the main loop
 SLEEP_TIME = 2
 
-client = mqtt.Client("mydevice", True)
+BROKER = "test.mosquitto.org"
+
+client = mqtt.Client("iot-marco-esp32", True)
 
 # temperature and humidity sensor
 htu = htu21d.HTU21D(I2C0)
@@ -97,7 +99,6 @@ def send_devices_data():
 # takes the new values from the received data and updates the global variables
 def set_variables(data):
     global MAX_TEMP, MIN_TEMP, COVER_TIME, UNCOVER_TIME
-    # the message received is a JSON object
     values = json.loads(data)
     MAX_TEMP = float(values["max temp"])
     MIN_TEMP = float(values["min temp"])
@@ -107,7 +108,7 @@ def set_variables(data):
     send_variables()
 
 
-# called when any message is received
+# called whenever a message is received
 def read_data(client, data):
     message = data['message']
     topic = str(message.topic)
@@ -129,7 +130,7 @@ def read_data(client, data):
 
 
 #########################################
-#           control functions           #
+#       sensors control functions       #
 #########################################
 
 def monitor_temperature(value):
@@ -140,11 +141,11 @@ def monitor_temperature(value):
 
 
 def is_bright(value):
-    return value < 1000
+    return value < 1250
 
 
 def is_dark(value):
-    return value > 2000
+    return value > 2250
 
 
 time_passed = 0
@@ -183,14 +184,15 @@ pinMode(PHOTORESISTOR_PIN, INPUT_ANALOG)
 htu.start()
 htu.init()
 
-sunshield.init()
-
 wifi.connect()
 
+client.connect(BROKER, keepalive=0)
+print("connected to broker:", BROKER)
+# defines callback function for when it receives subscription's ACK
 client.on(mqtt.SUBACK, confirm_subscribe)
-client.connect("test.mosquitto.org", keepalive=0)
-client.loop(read_data)
 client.subscribe([["iot-marco/commands/#", 0]])
+# starts a new thread to read incoming messages with the given function: read_data
+client.loop(read_data)
 
 
 

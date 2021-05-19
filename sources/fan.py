@@ -32,3 +32,7 @@ class Fan():
     def control(self, command):
         if command == "get-state":
             self._client.publish("iot-marco/data/fan", self.state())
+        elif command == "start":
+            self.start()
+        elif command == "stop":
+            self.stop()
