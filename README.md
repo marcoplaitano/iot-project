@@ -44,9 +44,11 @@ The exchange of data between the device and the webpage is achieved through the 
 + PC cooling fan
 + Breadboard
 + Photoresistor
-+ 2x LED
-+ 2x 220 ohm resistor
++ 1x LED
++ 1x 220 ohm resistor
 + 1x 10k ohm resistor
++ 9x M-M jumper wires
++ 9x M-F jumper wires
 
 -----
 
