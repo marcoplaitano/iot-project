@@ -39,7 +39,7 @@ function clearInput() {
 
 function initClient() {
     // creates the mqtt client and connects it to the broker's websocket, unencrypted port 8080
-    mqttClient = new Paho.MQTT.Client("test.mosquitto.org", 8080, "iotMarcoWeb");
+    mqttClient = new Paho.MQTT.Client("test.mosquitto.org", 8080, "iot-marco-web");
     mqttClient.onConnectionLost = onDisconnect;
     mqttClient.onMessageArrived = onMessageReceived;
     mqttClient.connect({

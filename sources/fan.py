@@ -3,6 +3,7 @@ class Fan():
         self._pin = pin
         self._client = client
         self._running = False
+        pinMode(self._pin, OUTPUT)
 
 
     def is_running(self):

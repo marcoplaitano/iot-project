@@ -11,6 +11,7 @@ class Sunshield():
         self._pin = pin
         self._client = client
         self._position = UNCOVER_PW
+        pinMode(self._pin, OUTPUT)
         pwm.write(self._pin, PERIOD, UNCOVER_PW, MICROS)
 
 

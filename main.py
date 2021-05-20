@@ -22,8 +22,6 @@ import sources.sunshield as mySunshield
 #               variables               #
 #########################################
 
-PHOTORESISTOR_PIN = A1
-
 # if the temperature exceeds this value the cooling fan will be turned on
 MAX_TEMP = 37.00
 # when the fan is on and temperature reaches this value, the fan turns off
@@ -179,7 +177,7 @@ def monitor_brightness(value):
 #                 setup                 #
 #########################################
 
-pinMode(PHOTORESISTOR_PIN, INPUT_ANALOG)
+pinMode(A1, INPUT_ANALOG)
 
 htu.start()
 htu.init()
@@ -188,7 +186,7 @@ wifi.connect()
 
 client.connect(BROKER, keepalive=0)
 print("connected to broker:", BROKER)
-# defines callback function for when it receives subscription's ACK
+# defines the callback function for when it receives subscription's ACK
 client.on(mqtt.SUBACK, confirm_subscribe)
 client.subscribe([["iot-marco/commands/#", 0]])
 # starts a new thread to read incoming messages with the given function: read_data
@@ -204,7 +202,7 @@ while True:
     # reads the values
     temperature = htu.get_temp()
     humidity = htu.get_humid()
-    brightness = analogRead(PHOTORESISTOR_PIN)
+    brightness = analogRead(A1)
 
     # monitors them
     monitor_temperature(temperature)
