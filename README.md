@@ -48,7 +48,7 @@ The exchange of data between the device and the webpage is achieved through the 
 + 1x 220 ohm resistor
 + 1x 10k ohm resistor
 + 9x M-M jumper wires
-+ 9x M-F jumper wires
++ 12x M-F jumper wires
 
 -----
 
