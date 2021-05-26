@@ -43,11 +43,11 @@ htu = htu21d.HTU21D(I2C0)
 # cooling fan controlled by a relay on pin D23
 fan = myFan.Fan(D23, client)
 
-# cardboard panel attached to a servo motor controlled by pin D17
-sunshield = mySunshield.Sunshield(D17.PWM, client)
+# cardboard panel attached to a servo motor controlled by pin D15
+sunshield = mySunshield.Sunshield(D15.PWM, client)
 
 # led to activate if the room is too dark
-led = myLed.Led(D18, client)
+led = myLed.Led(D16, client)
 
 
 
@@ -144,18 +144,18 @@ def monitor_temperature(value):
 #########################################
 
 # the value read from the photoresistor is an integer within the range [0, 4095]
-# the lower, the brighter the room is.
+# the higher the value, the brighter the room is.
 # I use this function to normalize said value in the range [0, 100]
 def normalize(value):
     return int(value / 4095 * 100)
 
 
 def is_bright(value):
-    return value < 30
+    return value > 70
 
 
 def is_dark(value):
-    return value > 60
+    return value < 40
 
 
 time_passed = 0
@@ -201,7 +201,7 @@ print("connected to broker:", BROKER)
 # defines the callback function for when it receives subscription's ACK
 client.on(mqtt.SUBACK, confirm_subscribe)
 client.subscribe([["iot-marco/commands/#", 0]])
-# starts a new thread to read incoming messages with the given function: read_data
+# starts a new thread to read incoming messages with the given function
 client.loop(read_data)
 
 
