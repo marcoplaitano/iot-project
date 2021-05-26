@@ -4,6 +4,7 @@ class Fan():
         self._client = client
         self._running = False
         pinMode(self._pin, OUTPUT)
+        digitalWrite(self._pin, LOW)
 
 
     def is_running(self):

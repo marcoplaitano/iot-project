@@ -4,6 +4,7 @@ class Led():
         self._client = client
         self._is_on = False
         pinMode(self._pin, OUTPUT)
+        digitalWrite(self._pin, LOW)
 
 
     def off(self):

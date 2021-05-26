@@ -172,8 +172,6 @@ function updateSensorsData(data) {
     var temperature = parseFloat(obj["temperature"]).toPrecision(4);
     var humidity = parseFloat(obj["humidity"]).toPrecision(4);
     var brightness = parseInt(obj["brightness"]);
-    // brightness is a value between 0 and 4095. It is normalized in the range 0, 100
-    brightness = parseInt(brightness / 4095 * 100);
 
     document.getElementById("temp-value").innerHTML = temperature + " °C";
     document.getElementById("hum-value").innerHTML = humidity + " %";
@@ -212,7 +210,6 @@ function updateChart(values) {
 function setDevicesInitialState(data) {
     // the message received is in the form of a JSON object
     var obj = JSON.parse(data);
-
     updateDeviceState("fan", obj['fan']);
     updateDeviceState("sunshield", obj['sunshield']);
     updateDeviceState("led", obj['led']);

@@ -128,7 +128,7 @@ def read_data(client, data):
 
 
 #########################################
-#       sensors control functions       #
+#     temperature control functions     #
 #########################################
 
 def monitor_temperature(value):
@@ -138,12 +138,24 @@ def monitor_temperature(value):
         fan.stop()
 
 
+
+#########################################
+#     brightness control functions      #
+#########################################
+
+# the value read from the photoresistor is an integer within the range [0, 4095]
+# the lower, the brighter the room is.
+# I use this function to normalize said value in the range [0, 100]
+def normalize(value):
+    return int(value / 4095 * 100)
+
+
 def is_bright(value):
-    return value < 1250
+    return value < 30
 
 
 def is_dark(value):
-    return value > 2250
+    return value > 60
 
 
 time_passed = 0
@@ -202,7 +214,7 @@ while True:
     # reads the values
     temperature = htu.get_temp()
     humidity = htu.get_humid()
-    brightness = analogRead(A1)
+    brightness = normalize(analogRead(A1))
 
     # monitors them
     monitor_temperature(temperature)
