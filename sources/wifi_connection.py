@@ -7,13 +7,15 @@ WIFI_PASSWORD = "WIFI_PASSWORD"
 
 
 def connect():
+    """
+    Connects the board to the wifi.
+    """
     if WIFI_PASSWORD == "WIFI_PASSWORD":
         print("CHANGE WIFI NAME AND PASSWORD VALUES IN SOURCES/WIFI_CONNECTION.PY")
         return False
 
     wifi_driver.auto_init()
 
-    # tries to establish a connection
     try:
         num_tries = 3
         for i in range(num_tries):
@@ -22,26 +24,30 @@ def connect():
             print("done")
             return True
         else:
-            print("couldn't connect")
+            print("Could not connect.")
             return False
     except Exception as e:
-        print("Couldn't connect to WIFI. Error:", e)
+        print("Could not connect to WIFI. Error:", e)
         return False
 
 
-# returns the IP address associated to the device.
 def get_ip_address():
+    """
+    Returns the IP address associated to the device.
+    """
     try:
         return wifi.link_info()[0]
     except Exception as e:
-        print("Couldn't get IP address. Returning empty string.")
+        print("Could not get IP address. Returning empty string.")
         return ""
 
 
-# returns wether the device is connected to wifi or not.
 def is_connected():
+    """
+    Returns wether the device is connected to wifi or not.
+    """
     try:
         return wifi.is_linked()
     except Exception as e:
-        print("Couldn't check for existing WIFI connection. Returning false.")
+        print("Could not check for existing WIFI connection. Returning false.")
         return False
