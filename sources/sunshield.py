@@ -13,6 +13,8 @@ class Sunshield():
         pinMode(self._pin, OUTPUT)
         self._client = client
         self._period = 20000
+        # the positions (in pulse width) to which the motor has to turn
+        # in order to cover/uncover the device
         self._cover_pw = 1700
         self._uncover_pw = 700
         # starts in "uncover" position by default
@@ -22,7 +24,7 @@ class Sunshield():
 
     def _move_to(self, pulse):
         """
-        Turns the motor to the desired pulse.
+        Turns the motor to the desired position expressed as pulse width.
         """
         pwm.write(self._pin, self._period, pulse, MICROS)
         self._position = pulse
@@ -44,14 +46,15 @@ class Sunshield():
 
     def is_covering(self):
         """
-        Returns wether the sunshield is currently covering the photoresistor.
+        Returns wether the sunshield is currently shielding the light.
         """
         return self._position != self._uncover_pw
 
 
     def cover(self):
         """
-        Turns the motor in the established position to cover the photoresistor.
+        Turns the motor in the established position to shield the light
+        and notifies the user via MQTT.
         """
         if self.is_covering():
             return
@@ -61,7 +64,8 @@ class Sunshield():
 
     def uncover(self):
         """
-        Turns the motor in the established position to uncover the photoresistor.
+        Turns the motor back to its original position to let light come through
+        and notifies the user via MQTT.
         """
         if not self.is_covering():
             return
